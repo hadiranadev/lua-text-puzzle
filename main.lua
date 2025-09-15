@@ -1,4 +1,5 @@
--- Copyright (c) 2025 Hadi Rana. All rights reserved.
+-- SPDX-License-Identifier: MIT
+-- Copyright (c) 2025 Hadi Rana
 
 -- main.lua
 
@@ -6,6 +7,7 @@ local Player = require("player")
 local Rooms = require("rooms")
 local Utils = require("utils")
 local Inventory = require("inventory")
+local Items = require("items")
 local C = require("color")
 
 -- Initial display.
@@ -89,11 +91,16 @@ while running do
         local item_id = command:match("^use%s+(.+)$")
         if not item_id or item_id == "" then
             print("Use what?")
-        elseif not Inventory.has(item_id) then
-            print("You don't have that item.")
-        else
-            local out = Utils.useItem(item_id, { room = Player.getLocation() })
-            print(out)
+        else 
+            -- Accept either item_id or display name.
+            local resolved = Items.resolve(item_id) or item_id
+
+            if not Inventory.has(resolved) then
+                print("You don't have that item.")
+            else
+                local out = Utils.useItem(resolved, { room = Player.getLocation() })
+                print(out)
+            end
         end
         goto continue_loop
 

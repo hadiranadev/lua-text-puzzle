@@ -1,4 +1,5 @@
--- Copyright (c) 2025 Hadi Rana. All rights reserved.
+-- SPDX-License-Identifier: MIT
+-- Copyright (c) 2025 Hadi Rana
 
 -- inventory.lua
 -- adding, using, removing items, listing items.

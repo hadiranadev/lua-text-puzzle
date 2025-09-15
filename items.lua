@@ -1,4 +1,5 @@
--- Copyright (c) 2025 Hadi Rana. All rights reserved.
+-- SPDX-License-Identifier: MIT
+-- Copyright (c) 2025 Hadi Rana
 
 -- items.lua
 -- item database, methods, helpers.

@@ -1,4 +1,5 @@
--- Copyright (c) 2025 Hadi Rana. All rights reserved.
+-- SPDX-License-Identifier: MIT
+-- Copyright (c) 2025 Hadi Rana
 
 -- utils.lua
 -- item functionality, returning displays.
@@ -103,17 +104,7 @@ local function use_knife(context)
     return "You brandish the knife, but there’s nothing to cut here."
   end
 
-  -- Checks if greenhouse state is true (vines cut)
-  local gh = require("rooms").data["greenhouse"]
-  gh.state = gh.state or {}
-  if gh.state.vines_cut then
-    return "The vines are already severed."
-  end
-    -- Cut vines -> grant trapdoor_key
-    gh.state.vines_cut = true
-    local Inventory = require("inventory")
-    Inventory.add("trapdoor_key")
-    return "You slice through the writhing vines. Something drops with a clink... a key. (You take the Trapdoor Key.)"
+  return Rooms.performAction("greenhouse", "cut_vines")
 end
   
 
@@ -127,7 +118,7 @@ local function use_trowel(context)
   -- Haven't examined grass.
   local g = require("rooms").data["garden"]
   g.state = g.state or {}
-  if not g.state.soil_dug then
+  if not g.state.soil_spotted then
     return "You don’t see a good place to dig yet. Look for disturbed soil first."
   end
   

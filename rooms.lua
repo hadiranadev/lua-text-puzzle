@@ -1,4 +1,5 @@
--- Copyright (c) 2025 Hadi Rana. All rights reserved.
+-- SPDX-License-Identifier: MIT
+-- Copyright (c) 2025 Hadi Rana
 
 -- rooms.lua
 -- mini database, moving, searching functions. 
@@ -6,45 +7,9 @@
 local Inventory = require("inventory")
 local Items = require("items")
 local C = require("color")
+local World = require("world")
 
 local Rooms = {}
-
--- ===========
--- Constellation puzzle data
-Rooms.world = { 
-    -- For testing
-    -- sq_code = "5732", 
-    -- sq_hint_seen = false 
-    sq_code = nil, -- actual code for lockbox
-    sq_hint_seen = false, -- telescope/star charts in observatory
-    constellations = nil, -- map glyph -> star count
-    ring_seen = false -- for puzzle order
-}
-
-local function initStarPuzzle()
-    math.randomseed(os.time())
-  
-    -- The ring order shown in the Crypt – the order for the code.
-    local ring = {"◇","✶","☾","♄"}
-  
-    -- Random star counts (2 .. 9) for each constellation
-    local counts = {}
-    for _, glyph in ipairs(ring) do
-        counts[glyph] = math.random(2, 9)
-    end
-  
-    -- Build the four digit code by crypt ring order
-    local code = ""
-    for _, glyph in ipairs(ring) do
-        code = code .. tostring(counts[glyph])
-    end
-  
-    Rooms.world.constellations = counts -- stars per constellation
-    Rooms.world.sq_code = code -- four-digit code derived from counts
-end
-  
-initStarPuzzle()
--- ===========
 
 -- All rooms (Room Data)
 Rooms.data = {
@@ -240,7 +205,7 @@ Rooms.data = {
             end, 
             ["examine symbols"] = function(room) 
                 room.state.symbols_seen = true
-                Rooms.world.ring_seen = true  -- for star puzzle.
+                World.ring_seen = true  -- for star puzzle.
                 return "You trace four glyphs arranged in a ring: ◇, ✶, ☾, ♄. They feel like an order, not decoration."
             end,
             ["pry coffin panel"] = function(room)
@@ -376,9 +341,9 @@ Rooms.data = {
         actions = {
             ["examine telescope"] = function(room) 
                 room.state.telescope_checked = true
-                if room.state.charts_studied then Rooms.world.sq_hint_seen = true end
+                if room.state.charts_studied then World.sq_hint_seen = true end
 
-                local c = Rooms.world.constellations or {}
+                local c = World.constellations or {}
                 -- fallbacks in case something odd happens
                 local d  = c["◇"] or 4
                 local st = c["✶"] or 5
@@ -390,7 +355,7 @@ Rooms.data = {
             end, 
             ["inspect star charts"] = function(room) 
                 room.state.charts_studied = true
-                if room.state.telescope_checked then Rooms.world.sq_hint_seen = true end
+                if room.state.telescope_checked then World.sq_hint_seen = true end
                 return "A marginal note: 'Count the points that burn in each. Order per the crypt’s ring.'"
             end
         }
@@ -402,15 +367,11 @@ Rooms.data = {
 -- Get room description
 function Rooms.describe(room_id)
     local room = Rooms.data[room_id]
+    if not room then return "You see nothing but darkness" end
 
     local title = C.paint(C.paint(room.name, "bold"), "yellow")
     local desc  = C.paint(room.description, "bold")
-
-    if room then
-        return title .. "\n" .. desc
-    else
-        return "You see nothing but darkness."
-    end
+    return title .. "\n" .. desc
 end
 
 -- Move to another room (returns next room ID if valid)
@@ -573,16 +534,16 @@ end
 -- Handle Servants' Quarters pin code.
 function Rooms.trySQCode(code)
     local sq = Rooms.data["servants_quarters"]
-    if not sq or not Rooms.world.sq_code then
+    if not sq or not World.sq_code then
         return "The mechanism doesn’t respond."
     end
     if sq.state and sq.state.box_opened then
         return "The lockbox is already open."
     end
-    if not (Rooms.world.sq_hint_seen and Rooms.world.ring_seen) then
+    if not (World.sq_hint_seen and World.ring_seen) then
         return "You don’t yet understand the order of the figures. Study the sky and the carved ring first."
     end
-    if tostring(code) == tostring(Rooms.world.sq_code) then
+    if tostring(code) == tostring(World.sq_code) then
         sq.state = sq.state or {}
         sq.state.box_opened = true
         local Inventory = require("inventory")
