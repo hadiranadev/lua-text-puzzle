@@ -1,7 +1,7 @@
 -- SPDX-License-Identifier: MIT
 -- Copyright (c) 2025 Hadi Rana
 
--- color.lua
+-- src/core/color.lua
 -- formatting with colours.
 
 local C = {}

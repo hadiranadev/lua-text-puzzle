@@ -1,13 +1,13 @@
 -- SPDX-License-Identifier: MIT
 -- Copyright (c) 2025 Hadi Rana
 
--- rooms.lua
+-- src/game/rooms.lua
 -- mini database, moving, searching functions. 
 
-local Inventory = require("inventory")
-local Items = require("items")
-local C = require("color")
-local World = require("world")
+local Inventory = require("src.game.inventory")
+local Items = require("src.game.items")
+local C = require("src.core.color")
+local World = require("src.game.world")
 
 local Rooms = {}
 
@@ -41,7 +41,7 @@ Rooms.data = {
             ["pull book"] = function(room) 
                     if not room.state.niche_opened then
                         room.state.niche_opened = true
-                        local Inventory = require("inventory")
+                        local Inventory = require("src.game.inventory")
                         Inventory.add("observatory_key")
                         return "You pull the newer book. A panel slides open with a click—inside, an intricate key glints. (You take the Observatory Key.)"
                     else
@@ -67,7 +67,7 @@ Rooms.data = {
                 return "The journal rambles about nights spent charting ◇, ✶, ☾, ♄... 'Begin where light is sharpest, end where time is slowest.'"
             end, 
             ["dust study"] = function(room)
-                local Inventory = require("inventory")
+                local Inventory = require("src.game.inventory")
                 if not Inventory.has("todo_list") then
                     return "Why dust now? You don't feel particularly compelled."
                 end
@@ -91,7 +91,7 @@ Rooms.data = {
                 if not room.state.trapdoor_revealed then
                     return "You don't see a way down."
                 end
-                local Inventory = require("inventory")
+                local Inventory = require("src.game.inventory")
                 if not Inventory.has("trapdoor_key") then
                     return "The trapdoor is locked tight."
                 end
@@ -124,7 +124,7 @@ Rooms.data = {
                 if room.state.soil_dug then
                     return "The disturbed patch of earth has already been dug up."
                 end
-                local Inventory = require("inventory")
+                local Inventory = require("src.game.inventory")
                 if not room.state.soil_spotted then
                     return "You don’t see a good place to dig yet."
                 end
@@ -159,7 +159,7 @@ Rooms.data = {
                 room.state = room.state or {}
                 if not room.state.trowel_taken then
                     room.state.trowel_taken = true
-                    local Inventory = require("inventory")
+                    local Inventory = require("src.game.inventory")
                     Inventory.add("trowel")
                     return "The overturned pot spills dark soil across the floor. Something metallic glints faintly inside. (You take the Trowel.)" 
                 else
@@ -180,7 +180,7 @@ Rooms.data = {
                 if room.state.vines_cut then 
                     return "You've already cut through the vines."
                 end
-                local Inventory = require("inventory")
+                local Inventory = require("src.game.inventory")
                 if not Inventory.has("knife") then
                     return "You could probably do that with a sharp blade..."
                 end
@@ -212,7 +212,7 @@ Rooms.data = {
                 if not room.state.coffin_examined then
                     return "You don’t yet see a place that looks like it could be pried."
                 end
-                local Inventory = require("inventory")
+                local Inventory = require("src.game.inventory")
                 if not Inventory.has("knife") then
                     return "You need a thin, sturdy edge—your fingers won’t do. A blade, perhaps."
                 end
@@ -240,7 +240,7 @@ Rooms.data = {
                 return "The chandelier hangs precariously, its crystals covered in dust. One loose chain might drop it at any moment." 
             end, 
             ["dust table"] = function(room)
-                local Inventory = require("inventory")
+                local Inventory = require("src.game.inventory")
                 if not Inventory.has("todo_list") then
                     return "You brush at the dust... why are you doing this again?"
                 end
@@ -265,7 +265,7 @@ Rooms.data = {
                 if room.state.chandelier_dropped then
                     return "The chandelier has already been dropped."
                 end
-                local Inventory = require("inventory")
+                local Inventory = require("src.game.inventory")
                 if not Inventory.has("fire_poker") then
                     return "You can’t safely reach the loose chain. A long tool might help."
                 end
@@ -298,7 +298,7 @@ Rooms.data = {
                     return "The drawer is empty now."
                 end
                 room.state.drawer_taken = true
-                local Inventory = require("inventory")
+                local Inventory = require("src.game.inventory")
                 Inventory.add("todo_list")
                 return "Inside the stiff old drawer you find a crumpled note. (You take the Servants' To-Do List.)"
             end,
@@ -478,7 +478,7 @@ function Rooms.canShowAction(room, action_name)
     end
     -- Greenhouse 'cut' if knife in inventory and uncut
     if room.name == "Glass Greenhouse" and action_name == "cut vines" then
-        local Inventory = require("inventory")
+        local Inventory = require("src.game.inventory")
         room.state = room.state or {}
         return room.state.vines_seen and (not room.state.vines_cut) and Inventory.has("knife")
     end
@@ -488,13 +488,13 @@ function Rooms.canShowAction(room, action_name)
     end
     -- Only shows "dust study" if you have the list and it's not done
     if room.name == "Secret Study" and action_name == "dust study" then
-        local Inventory = require("inventory")
+        local Inventory = require("src.game.inventory")
         room.state = room.state or {}
         return Inventory.has("todo_list") and not room.state.study_dusted
     end
     -- For Crypt coffin prying after examining coffin.
     if room.name == "Ancient Crypt" and action_name == "pry coffin panel" then
-        local Inventory = require("inventory")
+        local Inventory = require("src.game.inventory")
         room.state = room.state or {}
         return room.state.coffin_examined == true and Inventory.has("knife")
     end
@@ -504,7 +504,7 @@ function Rooms.canShowAction(room, action_name)
     end
     -- Examine Chandelier in Dining Hall.
     if room.name == "Dining Hall" and action_name == "drop chandelier" then
-        local Inventory = require("inventory")
+        local Inventory = require("src.game.inventory")
         room.state = room.state or {}
         return room.state.chandelier_examined and not room.state.chandelier_dropped and Inventory.has("fire_poker")
     end
@@ -515,13 +515,13 @@ function Rooms.canShowAction(room, action_name)
     end
     -- Show "dust table" in Dining Hall only if you have the to-do list and haven’t dusted yet
     if room.name == "Dining Hall" and action_name == "dust table" then
-        local Inventory = require("inventory")
+        local Inventory = require("src.game.inventory")
         room.state = room.state or {}
         return Inventory.has("todo_list") and not room.state.table_dusted
     end
     -- Show "dig grass" in Garden after spotting the soil and if you have the trowel
     if room.name == "Overgrown Garden" and action_name == "dig grass" then
-        local Inventory = require("inventory")
+        local Inventory = require("src.game.inventory")
         room.state = room.state or {}
         return room.state.soil_spotted and (not room.state.soil_dug) and Inventory.has("trowel")
     end
@@ -546,7 +546,7 @@ function Rooms.trySQCode(code)
     if tostring(code) == tostring(World.sq_code) then
         sq.state = sq.state or {}
         sq.state.box_opened = true
-        local Inventory = require("inventory")
+        local Inventory = require("src.game.inventory")
         Inventory.add("greenhouse_key")
         return "The tumblers click in sequence. The lid lifts and reveals a small brass key with a floral engraving. (You take the Greenhouse Key.)"
     else

@@ -1,11 +1,11 @@
 -- SPDX-License-Identifier: MIT
 -- Copyright (c) 2025 Hadi Rana
 
--- player.lua
+-- src/game/player.lua
 -- stats, location, inventory
 
-local Inventory = require("inventory")
-local C = require("color")
+local Inventory = require("src.game.inventory")
+local C = require("src.core.color")
 
 local Player = {}
 

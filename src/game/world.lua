@@ -1,8 +1,8 @@
 -- SPDX-License-Identifier: MIT
 -- Copyright (c) 2025 Hadi Rana
 
--- world.lua
--- Star puzzle initialization 
+-- src/game/world.lua
+-- star puzzle initialization 
 
 local World = { 
     -- For testing

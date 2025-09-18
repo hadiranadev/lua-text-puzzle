@@ -1,7 +1,7 @@
 -- SPDX-License-Identifier: MIT
 -- Copyright (c) 2025 Hadi Rana
 
--- items.lua
+-- src/game/items.lua
 -- item database, methods, helpers.
 
 local Items = {}

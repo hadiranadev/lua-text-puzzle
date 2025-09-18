@@ -1,11 +1,11 @@
 -- SPDX-License-Identifier: MIT
 -- Copyright (c) 2025 Hadi Rana
 
--- inventory.lua
+-- src/game/inventory.lua
 -- adding, using, removing items, listing items.
 
-local Items = require("items")
-local C = require("color")
+local Items = require("src.game.items")
+local C = require("src.core.color")
 
 local Inventory = {}
 

@@ -1,11 +1,12 @@
 -- SPDX-License-Identifier: MIT
 -- Copyright (c) 2025 Hadi Rana
 
--- utils.lua
+-- src/game/utils.lua
 -- item functionality, returning displays.
 
-local Rooms = require("rooms")
-local Inventory = require("inventory")
+local Rooms = require("src.game.rooms")
+local Inventory = require("src.game.inventory")
+local Map = require("src.io.map")
 
 local Utils = {}
 
@@ -15,27 +16,6 @@ local CONSUME_KEYS = true
 -- Helpers / Pattern Utilities.
 local function trim(s) return (s and s:gsub("^%s*(.-)%s*$", "%1") or "") end
 local function norm(s) return (s and trim(s:lower()) or "") end
-
--- ASCII map for Section 1
-local SECTION1_MAP = [[
-+------------------ SECTION 1 ------------------+
-
-                    [Observatory]
-                          |
-  [Crypt] - [Library] - [Study]
-                |     
-                |     (Greenhouse)
-                |           |
-            [Entrance] - [Garden]
-                |
-          [Dining Hall]
-                |
-            [Kitchen] 
-                |
-        [Servants' Quarters]
-        
-+-----------------------------------------------+
-]]
 
 -- ASCII for to-do list.
 local TODO_LIST = [[
@@ -116,7 +96,7 @@ local function use_trowel(context)
   end
 
   -- Haven't examined grass.
-  local g = require("rooms").data["garden"]
+  local g = require("src.game.rooms").data["garden"]
   g.state = g.state or {}
   if not g.state.soil_spotted then
     return "You don’t see a good place to dig yet. Look for disturbed soil first."
@@ -129,7 +109,7 @@ local function use_trowel(context)
 
   -- Dig soil -> grant rope
   g.state.soil_dug = true
-  local Inventory = require("inventory")
+  local Inventory = require("src.game.inventory")
   Inventory.add("rope")
   return "You dig into the disturbed soil and uncover tightly coiled rope. (You take the Rope.)"
 end
@@ -140,7 +120,8 @@ function Utils.useItem(item_id, context)
 
   -- Map usage
   if item_id == "map" then
-      return SECTION1_MAP
+    local here = (context and context.room) or ""
+      return Map.render(here)
   end
   -- Key usage
   if KEY_BINDINGS[item_id] then

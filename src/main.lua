@@ -1,14 +1,15 @@
 -- SPDX-License-Identifier: MIT
 -- Copyright (c) 2025 Hadi Rana
 
--- main.lua
+-- src/main.lua
 
-local Player = require("player")
-local Rooms = require("rooms")
-local Utils = require("utils")
-local Inventory = require("inventory")
-local Items = require("items")
-local C = require("color")
+local Player = require("src.game.player")
+local Rooms = require("src.game.rooms")
+local Utils = require("src.game.utils")
+local Inventory = require("src.game.inventory")
+local Items = require("src.game.items")
+local C = require("src.core.color")
+local Parser = require("src.core.parser")
 
 -- Initial display.
 local function showWelcome()
@@ -66,6 +67,12 @@ while running do
         break
     end
     local command = normalize_command(raw)
+
+    -- Run through parser
+    do
+        local canonical = Parser.parse(raw, {actions = actions, exits = exits})
+        if canonical then command = normalize_command(canonical) end
+    end
 
     -- ===========================
     -- Command branches
